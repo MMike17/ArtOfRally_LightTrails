@@ -1,0 +1,25 @@
+ManifestFileVersion: 0
+CRC: 2837788302
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: ac383d01158f4559fa67344a8f643a8e
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 781f69eed4ab9a045bd82fe33d74bedc
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 120
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/LightTrails/LightTrail.prefab
+Dependencies: []
