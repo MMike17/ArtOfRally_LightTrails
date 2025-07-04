@@ -25,18 +25,13 @@ namespace LightTrails
     // 	}
     // }
 
-    [HarmonyPatch(typeof(PlayerManager), "Init")]
+    [HarmonyPatch(typeof(BrakeEffects), "Awake")]
     static class TrailsSpawner
     {
-        public static ConditionTypes.Weather weather;
-
-        static void Postfix(PlayerManager __instance, ConditionTypes.Weather _weather)
+        static void Postfix(BrakeEffects __instance)
         {
-            weather = _weather;
-
-            BrakeEffects brakeEffects = __instance.PlayerObject.GetComponentInChildren<BrakeEffects>();
-            brakeEffects.LeftBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
-            brakeEffects.RightBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
+            __instance.LeftBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
+            __instance.RightBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
         }
     }
 }
