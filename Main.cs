@@ -46,15 +46,12 @@ namespace LightTrails
                 AssetBundle bundle = AssetBundle.LoadFromFile(Path.Combine(modEntry.Path, "light_trails"));
 
                 if (bundle != null)
-                {
-                    if (bundle != null)
-                        trailPrefab = bundle.LoadAsset<GameObject>("LightTrail");
-                    else
-                        Error("Couldn't load asset bundle \"light_trails\"");
+                    trailPrefab = bundle.LoadAsset<GameObject>("LightTrail");
+                else
+                    Error("Couldn't load asset bundle \"light_trails\"");
 
-                    if (bundle != null && !settings.disableInfoLogs)
-                        Log("Loaded bundle \"light_trails\"");
-                }
+                if (bundle != null && !settings.disableInfoLogs)
+                    Log("Loaded bundle \"light_trails\"");
             });
 
             markers = new List<GameObject>();
