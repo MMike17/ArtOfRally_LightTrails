@@ -33,7 +33,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <!-- Change this path to your local variant -->
     <GamePath>C:\Program Files (x86)\Steam\steamapps\common\artofrally</GamePath>
     <GameLibPath>$([System.IO.Path]::Combine($(GamePath), artofrally_Data\Managed))</GameLibPath>
     <GameModPath>$([System.IO.Path]::Combine($(GamePath), Mods\$(AssemblyName)))</GameModPath>
@@ -91,12 +90,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="**\*.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="Patches.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="TrailAnimator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="obj\Debug\" />
+    <Folder Include="obj\Release\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="CleanFolder" AfterTargets="BeforeBuild">
+  <!-- <Target Name="CleanFolder" AfterTargets="BeforeBuild">
     <RemoveDir Directories="$(GameModPath)" />
-  </Target>
+  </Target> -->
   <Target Name="CopyInfo" AfterTargets="BeforeBuild">
     <Copy SourceFiles="Info.json" DestinationFolder="$(GameModPath)" />
   </Target>
@@ -104,10 +110,16 @@
     <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="$(GameModPath)" />
   </Target>
   <!-- Use this line to copy asset bundles from "/Assets" to the mod folder -->
-  <Target Name="CopyAssets" AfterTargets="Build">
+  <Target Name="CopyAssets" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(Assets)" DestinationFolder="$(GameModPath)" />
   </Target>
   <Target Name="StartGame" AfterTargets="AfterBuild">
     <Exec Command="&quot;$([System.IO.Path]::Combine($(GamePath), artofrally.exe))&quot;" />
   </Target>
+  <PropertyGroup>
+    <BuildDependsOn>
+      $(BuildDependsOn);
+      CopyAssets
+    </BuildDependsOn>
+  </PropertyGroup>
 </Project>
