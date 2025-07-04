@@ -1,6 +1,7 @@
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using UnityEngine;
 using UnityModManagerNet;
@@ -20,6 +21,8 @@ namespace LightTrails
         /// <summary>This will be called when the mod is toggles on/off</summary>
         public static event Action<bool> OnToggle;
 
+        public static GameObject trailPrefab;
+
         static List<GameObject> markers;
         static Material markerMat;
 
@@ -37,6 +40,22 @@ namespace LightTrails
             modEntry.OnToggle = OnToggleEvent;
             modEntry.OnGUI = settings.Draw;
             modEntry.OnSaveGUI = settings.Save;
+
+            Try(() =>
+            {
+                AssetBundle bundle = AssetBundle.LoadFromFile(Path.Combine(modEntry.Path, "light_trails"));
+
+                if (bundle != null)
+                {
+                    if (bundle != null)
+                        trailPrefab = bundle.LoadAsset<GameObject>("LightTrail");
+                    else
+                        Error("Couldn't load asset bundle \"light_trails\"");
+
+                    if (bundle != null && !settings.disableInfoLogs)
+                        Log("Loaded bundle \"light_trails\"");
+                }
+            });
 
             markers = new List<GameObject>();
             return true;
