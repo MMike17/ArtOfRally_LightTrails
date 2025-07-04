@@ -7,7 +7,7 @@ using UnityModManagerNet;
 
 using static UnityModManagerNet.UnityModManager;
 
-namespace ModBase
+namespace LightTrails
 {
     public class Main
     {

@@ -1,6 +1,6 @@
 using HarmonyLib;
 
-namespace ModBase
+namespace LightTrails
 {
 	// Patch model
 	// [HarmonyPatch(typeof(), nameof())]
