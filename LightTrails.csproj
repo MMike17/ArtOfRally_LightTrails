@@ -33,7 +33,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-  	<!-- Change this path to your local variant -->
+    <!-- Change this path to your local variant -->
     <GamePath>C:\Program Files (x86)\Steam\steamapps\common\artofrally</GamePath>
     <GameLibPath>$([System.IO.Path]::Combine($(GamePath), artofrally_Data\Managed))</GameLibPath>
     <GameModPath>$([System.IO.Path]::Combine($(GamePath), Mods\$(AssemblyName)))</GameModPath>
@@ -61,6 +61,9 @@
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(GameLibPath)\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\artofrally\artofrally_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -102,7 +105,7 @@
   </Target>
   <!-- Use this line to copy asset bundles from "/Assets" to the mod folder -->
   <Target Name="CopyAssets" AfterTargets="Build">
-	<Copy SourceFiles="@(Assets)" DestinationFolder="$(GameModPath)" />
+    <Copy SourceFiles="@(Assets)" DestinationFolder="$(GameModPath)" />
   </Target>
   <Target Name="StartGame" AfterTargets="AfterBuild">
     <Exec Command="&quot;$([System.IO.Path]::Combine($(GamePath), artofrally.exe))&quot;" />
