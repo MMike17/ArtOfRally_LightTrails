@@ -26,17 +26,6 @@ namespace LightTrails
             }
         }
 
-        // detect when the car is braking
-        //      spawn a new line render
-        //      place points
-        //          first point is the end of the line
-        //      fade first point of line (move to second then remove a point from the start)
-        //      track length of movement to spawn new points
-        // detect when brake is released
-        //      move this line renderer to "passive" list
-        //      keep fade first point of line
-        //          when all the points are faded we can destroy the line
-
         private void Update()
         {
             bool brakeInput = GameEntryPoint.EventManager.playerManager.carcontroller.brakeKey;
@@ -158,7 +147,7 @@ namespace LightTrails
                     OnDestroy();
                 }
                 else
-                    fadeSpeed = Vector3.Distance(points[points.Count - 1], points[points.Count - 2]) / Time.deltaTime;
+                    fadeSpeed = Mathf.Max(0.1f, Vector3.Distance(points[points.Count - 1], points[points.Count - 2]) / Time.deltaTime);
             }
 
             public void PlaceLast() => points[points.Count - 1] = line.transform.position;
