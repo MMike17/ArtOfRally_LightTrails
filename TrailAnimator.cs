@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightTrails
@@ -6,6 +7,19 @@ namespace LightTrails
     /// <summary>Animates light trails depending on settings</summary>
     public class TrailAnimator : MonoBehaviour
     {
+        private static ConditionTypes.Weather currentWeather = ConditionTypes.Weather.None;
+
+        public enum Weather
+        {
+            Morning,
+            Afternoon,
+            Sunset,
+            Night,
+            Fog,
+            Rain,
+            Snow
+        }
+
         private List<TrackedLine> releasedLines;
         private TrackedLine currentLine;
         private bool lastBrakeInput;
@@ -13,7 +27,26 @@ namespace LightTrails
         private void Awake()
         {
             releasedLines = new List<TrackedLine>();
+
+            if (currentWeather == ConditionTypes.Weather.None)
+            {
+                RallyData data = GameModeManager.GetRallyDataCurrentGameMode();
+
+                if (data != null)
+                    currentWeather = data.GetCurrentStage().Weather;
+            }
         }
+
+        // detect when the car is braking
+        //      spawn a new line render
+        //      place points
+        //          first point is the end of the line
+        //      fade first point of line (move to second then remove a point from the start)
+        //      track length of movement to spawn new points
+        // detect when brake is released
+        //      move this line renderer to "passive" list
+        //      keep fade first point of line
+        //          when all the points are faded we can destroy the line
 
         // TODO : Decide fade duration for a line depending of the current speed of the source when we release the brakes
 
@@ -28,9 +61,7 @@ namespace LightTrails
                     // TODO : update the current line + track length
                 }
                 else
-                {
-                    // TODO : spawn line
-                }
+                    SpawnTrail();
             }
             else if (lastBrakeInput)
                 releasedLines.Add(currentLine);
@@ -43,43 +74,84 @@ namespace LightTrails
         private void SpawnTrail()
         {
             // TODO : Finish this
+
+            if (!Main.settings.showWeathers.HasFlag(ConvertWeather(currentWeather)))
+                return;
+
+            //bool shouldSpawn = true;
+
+            //switch (currentWeather)
+            //{
+            //    case ConditionTypes.Weather.None:
+            //        shouldSpawn = true;
+            //        break;
+
+            //    case ConditionTypes.Weather.Morning:
+            //        shouldSpawn = Main.settings.showMorning;
+            //        break;
+
+            //    case ConditionTypes.Weather.Afternoon:
+            //        shouldSpawn = Main.settings.showAfternoon;
+            //        break;
+
+            //    case ConditionTypes.Weather.Sunset:
+            //        shouldSpawn = Main.settings.showSunset;
+            //        break;
+
+            //    case ConditionTypes.Weather.Night:
+            //        shouldSpawn = Main.settings.showNight;
+            //        break;
+
+            //    case ConditionTypes.Weather.Fog:
+            //        shouldSpawn = Main.settings.showFog;
+            //        break;
+
+            //    case ConditionTypes.Weather.Rain:
+            //        shouldSpawn = Main.settings.showRain;
+            //        break;
+
+            //    case ConditionTypes.Weather.Snow:
+            //        shouldSpawn = Main.settings.showSnow;
+            //        break;
+            //}
+
+            LineRenderer line = Instantiate(Main.trailPrefab).GetComponent<LineRenderer>();
+            currentLine = new TrackedLine(line);
         }
 
-        // detect when the car is braking
-        //      spawn a new line render
-        //      place points
-        //          first point is the end of the line
-        //      fade first point of line (move to second then remove a point from the start)
-        //      track length of movement to spawn new points
-        // detect when brake is released
-        //      move this line renderer to "passive" list
-        //      keep fade first point of line
-        //          when all the points are faded we can destroy the line
+        private Weather ConvertWeather(ConditionTypes.Weather weather) => (Weather)Enum.Parse(typeof(Weather), weather.ToString());
 
         public class TrackedLine
         {
-            private List<Vector3> points;
-            public TrailRenderer line;
-            public float fadeSpeed;
+            public LineRenderer line;
 
-            public TrackedLine(TrailRenderer line, float fadeSpeed)
+            private List<Vector3> points;
+            private float currentDistance;
+            private float fadeSpeed;
+
+            public TrackedLine(LineRenderer line)
             {
                 this.line = line;
-                this.fadeSpeed = fadeSpeed;
 
                 Vector3[] extractedPoints = new Vector3[line.positionCount];
                 line.GetPositions(extractedPoints);
                 points = new List<Vector3>(extractedPoints);
             }
 
-            public void PlaceLast()
+            public void SetFadeSpeed(float fadeSpeed) => this.fadeSpeed = fadeSpeed;
+
+            public void PlaceLast(Vector3 position)
             {
-                // TODO : Finish this
+                points[points.Count - 1] = position;
             }
 
-            public void Update(float distance, bool updateLast)
+            public void Update(float distance)
             {
                 // TODO : Finish this
+
+                currentDistance += distance;
+
+                //if (currentDistance < Main.settings.)
             }
         }
     }
