@@ -9,17 +9,6 @@ namespace LightTrails
     {
         private static ConditionTypes.Weather currentWeather = ConditionTypes.Weather.None;
 
-        public enum Weather
-        {
-            Morning,
-            Afternoon,
-            Sunset,
-            Night,
-            Fog,
-            Rain,
-            Snow
-        }
-
         private List<TrackedLine> releasedLines;
         private TrackedLine currentLine;
         private bool lastBrakeInput;
@@ -48,8 +37,6 @@ namespace LightTrails
         //      keep fade first point of line
         //          when all the points are faded we can destroy the line
 
-        // TODO : Decide fade duration for a line depending of the current speed of the source when we release the brakes
-
         private void Update()
         {
             bool brakeInput = GameEntryPoint.EventManager.playerManager.carcontroller.brakeKey;
@@ -58,13 +45,24 @@ namespace LightTrails
             {
                 if (lastBrakeInput)
                 {
-                    // TODO : update the current line + track length
+                    currentLine.Update();
+                    currentLine.PlaceLast();
                 }
                 else
                     SpawnTrail();
             }
             else if (lastBrakeInput)
+            {
+                currentLine.ReleaseLine(
+                    () =>
+                    {
+                        // TODO : Will this capture correctly ?
+                        TrackedLine line = currentLine;
+                        releasedLines.Remove(line);
+                    }
+                );
                 releasedLines.Add(currentLine);
+            }
 
             // TODO : update released lines
 
@@ -73,8 +71,6 @@ namespace LightTrails
 
         private void SpawnTrail()
         {
-            // TODO : Finish this
-
             bool shouldSpawn = false;
 
             switch (currentWeather)
@@ -119,39 +115,106 @@ namespace LightTrails
             currentLine = new TrackedLine(line);
         }
 
-        private Weather ConvertWeather(ConditionTypes.Weather weather) => (Weather)Enum.Parse(typeof(Weather), weather.ToString());
+        public void RefreshSettings()
+        {
+            currentLine.UpdateSettings();
+            releasedLines.ForEach(line => line.UpdateSettings());
+        }
 
         public class TrackedLine
         {
-            public LineRenderer line;
-
             private List<Vector3> points;
+            private LineRenderer line;
+            private Action OnDestroy;
+            private Vector3 firstPointPos;
+            private Vector3 lastPos;
+            private float pointDistance;
             private float currentDistance;
             private float fadeSpeed;
+            private int maxPointsCount;
 
             public TrackedLine(LineRenderer line)
             {
                 this.line = line;
 
+                lastPos = line.transform.position;
+
                 Vector3[] extractedPoints = new Vector3[line.positionCount];
                 line.GetPositions(extractedPoints);
                 points = new List<Vector3>(extractedPoints);
+
+                if (points.Count == 0)
+                {
+                    points.Add(lastPos);
+                    line.SetPositions(points.ToArray());
+                }
             }
 
-            public void SetFadeSpeed(float fadeSpeed) => this.fadeSpeed = fadeSpeed;
-
-            public void PlaceLast(Vector3 position)
+            public void UpdateSettings()
             {
-                points[points.Count - 1] = position;
+                maxPointsCount = Mathf.FloorToInt(Main.settings.trailSmoothness * Main.settings.trailMaxLength);
+                pointDistance = 1f / Main.settings.trailSmoothness;
             }
 
-            public void Update(float distance)
+            public void ReleaseLine(Action OnDestroy)
             {
-                // TODO : Finish this
+                this.OnDestroy = OnDestroy;
 
-                currentDistance += distance;
+                if (points.Count < 2)
+                {
+                    Destroy(line.gameObject);
+                    OnDestroy();
+                }
+                else
+                    fadeSpeed = Vector3.Distance(points[points.Count - 1], points[points.Count - 2]) / Time.deltaTime;
+            }
 
-                //if (currentDistance < Main.settings.)
+            public void PlaceLast() => points[points.Count - 1] = line.transform.position;
+
+            public void Update()
+            {
+                bool isFading = fadeSpeed != 0;
+                float distance = Vector3.Distance(line.transform.position, lastPos);
+
+                if (isFading)
+                {
+                    currentDistance += distance;
+
+                    if (currentDistance >= pointDistance)
+                    {
+                        currentDistance = currentDistance % pointDistance;
+                        points.Add(line.transform.position);
+
+                        if (points.Count == 1)
+                            firstPointPos = points[0];
+                    }
+                }
+                else
+                {
+                    currentDistance += fadeSpeed * Time.deltaTime;
+
+                    if (currentDistance >= pointDistance)
+                    {
+                        currentDistance = currentDistance % pointDistance;
+                        maxPointsCount--;
+                    }
+                }
+
+                if (maxPointsCount == 1)
+                {
+                    Destroy(line.gameObject);
+                    OnDestroy();
+                    return;
+                }
+
+                if (points.Count > maxPointsCount)
+                    points.RemoveAt(0);
+
+                if (points.Count == maxPointsCount)
+                    points[0] = Vector3.Lerp(firstPointPos, points[1], currentDistance / pointDistance);
+
+                line.SetPositions(points.ToArray());
+                lastPos = line.transform.position;
             }
         }
     }
