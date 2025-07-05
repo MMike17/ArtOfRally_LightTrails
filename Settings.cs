@@ -31,10 +31,12 @@ namespace LightTrails
         public bool showSnow;
 
         [Header("Trails")]
-        [Draw(DrawType.Slider, Min = 1, Max = 5)]
+        [Draw(DrawType.Slider, Min = 1, Max = 4)]
         public int trailSmoothness = 3;
-        [Draw(DrawType.Slider, Min = 1, Max = 10)]
-        public float trailMaxLength = 5;
+        [Draw(DrawType.Slider, Min = 2, Max = 20)]
+        public float trailMaxLength = 10;
+        [Draw(DrawType.Toggle)]
+        public bool brakeTrailOnly = false;
 
         [Header("Debug")]
         [Draw(DrawType.Toggle)]

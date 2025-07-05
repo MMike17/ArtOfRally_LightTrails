@@ -24,36 +24,55 @@ namespace LightTrails
                 if (data != null)
                     currentWeather = data.GetCurrentStage().Weather;
             }
+
+            if (!Main.settings.brakeTrailOnly)
+                SpawnTrail(false);
         }
 
         private void Update()
         {
-            bool brakeInput = GameEntryPoint.EventManager.playerManager.carcontroller.brakeKey;
-
-            if (brakeInput)
+            Main.Try(() =>
             {
-                if (lastBrakeInput)
+                bool brakeInput = GameEntryPoint.EventManager.playerManager.carcontroller.brakeKey;
+
+                if (brakeInput)
                 {
-                    currentLine.Update();
-                    currentLine.PlaceLast();
+                    if (lastBrakeInput)
+                    {
+                        currentLine.Update();
+                        currentLine.PlaceLast();
+                    }
+                    else
+                    {
+                        if (!Main.settings.brakeTrailOnly)
+                            ReleaseLine();
+
+                        SpawnTrail(true);
+                    }
                 }
                 else
-                    SpawnTrail();
-            }
-            else if (lastBrakeInput)
-            {
-                TrackedLine line = currentLine;
+                {
+                    if (lastBrakeInput)
+                    {
+                        ReleaseLine();
 
-                currentLine.ReleaseLine(() => releasedLines.Remove(line));
-                releasedLines.Add(currentLine);
-                currentLine = null;
-            }
+                        if (!Main.settings.brakeTrailOnly)
+                            SpawnTrail(false);
+                    }
 
-            releasedLines.ForEach(line => line.Update());
-            lastBrakeInput = brakeInput;
+                    if (!Main.settings.brakeTrailOnly)
+                    {
+                        currentLine.Update();
+                        currentLine.PlaceLast();
+                    }
+                }
+
+                releasedLines.ForEach(line => line.Update());
+                lastBrakeInput = brakeInput;
+            });
         }
 
-        private void SpawnTrail()
+        private void SpawnTrail(bool asBrakes)
         {
             bool shouldSpawn = false;
 
@@ -97,6 +116,18 @@ namespace LightTrails
 
             LineRenderer line = Instantiate(Main.trailPrefab, transform).GetComponent<LineRenderer>();
             currentLine = new TrackedLine(line);
+
+            if (!asBrakes)
+                line.material.color = Color.black;
+        }
+
+        private void ReleaseLine()
+        {
+            TrackedLine line = currentLine;
+
+            currentLine.ReleaseLine(() => releasedLines.Remove(line));
+            releasedLines.Add(currentLine);
+            currentLine = null;
         }
 
         public void RefreshSettings()
