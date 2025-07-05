@@ -4,8 +4,6 @@ using UnityModManagerNet;
 using static UnityModManagerNet.UnityModManager;
 
 // TODO : Add settings here
-// trail length
-// point rate (find better name/smoothness ?)
 // trail width
 // initial alpha ?
 
@@ -31,8 +29,11 @@ namespace LightTrails
         [Draw(DrawType.Toggle)]
         public bool showSnow;
 
-        //[Header("Trails")]
-        //[Draw(DrawType.)]
+        [Header("Trails")]
+        [Draw(DrawType.Slider, Min = 2, Max = 10)]
+        public int trailSmoothness = 6;
+        [Draw(DrawType.Slider, Min = 1, Max = 5)]
+        public float trailMaxLength = 3;
 
         [Header("Debug")]
         [Draw(DrawType.Toggle)]
