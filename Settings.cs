@@ -16,23 +16,20 @@ namespace LightTrails
         // [Draw(DrawType.)]
 
         [Header("General")]
-        [Draw(DrawType.PopupToggleMulti)]
-        public TrailAnimator.Weather showWeathers = TrailAnimator.Weather.Night;
-
-        //[Draw(DrawType.Toggle)]
-        //public bool showMorning;
-        //[Draw(DrawType.Toggle)]
-        //public bool showAfternoon;
-        //[Draw(DrawType.Toggle)]
-        //public bool showSunset;
-        //[Draw(DrawType.Toggle)]
-        //public bool showNight;
-        //[Draw(DrawType.Toggle)]
-        //public bool showFog;
-        //[Draw(DrawType.Toggle)]
-        //public bool showRain;
-        //[Draw(DrawType.Toggle)]
-        //public bool showSnow;
+        [Draw(DrawType.Toggle)]
+        public bool showMorning;
+        [Draw(DrawType.Toggle)]
+        public bool showAfternoon;
+        [Draw(DrawType.Toggle)]
+        public bool showSunset;
+        [Draw(DrawType.Toggle)]
+        public bool showNight;
+        [Draw(DrawType.Toggle)]
+        public bool showFog;
+        [Draw(DrawType.Toggle)]
+        public bool showRain;
+        [Draw(DrawType.Toggle)]
+        public bool showSnow;
 
         //[Header("Trails")]
         //[Draw(DrawType.)]

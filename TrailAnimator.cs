@@ -75,45 +75,45 @@ namespace LightTrails
         {
             // TODO : Finish this
 
-            if (!Main.settings.showWeathers.HasFlag(ConvertWeather(currentWeather)))
+            bool shouldSpawn = false;
+
+            switch (currentWeather)
+            {
+                case ConditionTypes.Weather.None:
+                    shouldSpawn = true;
+                    break;
+
+                case ConditionTypes.Weather.Morning:
+                    shouldSpawn = Main.settings.showMorning;
+                    break;
+
+                case ConditionTypes.Weather.Afternoon:
+                    shouldSpawn = Main.settings.showAfternoon;
+                    break;
+
+                case ConditionTypes.Weather.Sunset:
+                    shouldSpawn = Main.settings.showSunset;
+                    break;
+
+                case ConditionTypes.Weather.Night:
+                    shouldSpawn = Main.settings.showNight;
+                    break;
+
+                case ConditionTypes.Weather.Fog:
+                    shouldSpawn = Main.settings.showFog;
+                    break;
+
+                case ConditionTypes.Weather.Rain:
+                    shouldSpawn = Main.settings.showRain;
+                    break;
+
+                case ConditionTypes.Weather.Snow:
+                    shouldSpawn = Main.settings.showSnow;
+                    break;
+            }
+
+            if (!shouldSpawn)
                 return;
-
-            //bool shouldSpawn = true;
-
-            //switch (currentWeather)
-            //{
-            //    case ConditionTypes.Weather.None:
-            //        shouldSpawn = true;
-            //        break;
-
-            //    case ConditionTypes.Weather.Morning:
-            //        shouldSpawn = Main.settings.showMorning;
-            //        break;
-
-            //    case ConditionTypes.Weather.Afternoon:
-            //        shouldSpawn = Main.settings.showAfternoon;
-            //        break;
-
-            //    case ConditionTypes.Weather.Sunset:
-            //        shouldSpawn = Main.settings.showSunset;
-            //        break;
-
-            //    case ConditionTypes.Weather.Night:
-            //        shouldSpawn = Main.settings.showNight;
-            //        break;
-
-            //    case ConditionTypes.Weather.Fog:
-            //        shouldSpawn = Main.settings.showFog;
-            //        break;
-
-            //    case ConditionTypes.Weather.Rain:
-            //        shouldSpawn = Main.settings.showRain;
-            //        break;
-
-            //    case ConditionTypes.Weather.Snow:
-            //        shouldSpawn = Main.settings.showSnow;
-            //        break;
-            //}
 
             LineRenderer line = Instantiate(Main.trailPrefab).GetComponent<LineRenderer>();
             currentLine = new TrackedLine(line);
