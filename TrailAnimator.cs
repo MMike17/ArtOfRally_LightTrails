@@ -53,21 +53,14 @@ namespace LightTrails
             }
             else if (lastBrakeInput)
             {
-                //Main.Log("Released line");
-                //currentLine.ReleaseLine(
-                //    () =>
-                //    {
-                //        // TODO : Will this capture correctly ?
-                //        TrackedLine line = currentLine;
-                //        releasedLines.Remove(line);
-                //    }
-                //);
-                //releasedLines.Add(currentLine);
-                //currentLine = null;
+                TrackedLine line = currentLine;
+
+                currentLine.ReleaseLine(() => releasedLines.Remove(line));
+                releasedLines.Add(currentLine);
+                currentLine = null;
             }
 
-            // TODO : update released lines
-
+            releasedLines.ForEach(line => line.Update());
             lastBrakeInput = brakeInput;
         }
 
@@ -206,7 +199,10 @@ namespace LightTrails
                 }
 
                 if (points.Count > maxPointsCount)
+                {
                     points.RemoveAt(0);
+                    firstPointPos = points[1];
+                }
 
                 if (points.Count == maxPointsCount)
                     points[0] = Vector3.Lerp(firstPointPos, points[1], currentDistance / pointDistance);
