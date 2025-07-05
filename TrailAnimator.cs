@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -54,16 +53,17 @@ namespace LightTrails
             }
             else if (lastBrakeInput)
             {
-                currentLine.ReleaseLine(
-                    () =>
-                    {
-                        // TODO : Will this capture correctly ?
-                        TrackedLine line = currentLine;
-                        releasedLines.Remove(line);
-                    }
-                );
-                releasedLines.Add(currentLine);
-                currentLine = null;
+                //Main.Log("Released line");
+                //currentLine.ReleaseLine(
+                //    () =>
+                //    {
+                //        // TODO : Will this capture correctly ?
+                //        TrackedLine line = currentLine;
+                //        releasedLines.Remove(line);
+                //    }
+                //);
+                //releasedLines.Add(currentLine);
+                //currentLine = null;
             }
 
             // TODO : update released lines
@@ -113,7 +113,7 @@ namespace LightTrails
             if (!shouldSpawn)
                 return;
 
-            LineRenderer line = Instantiate(Main.trailPrefab).GetComponent<LineRenderer>();
+            LineRenderer line = Instantiate(Main.trailPrefab, transform).GetComponent<LineRenderer>();
             currentLine = new TrackedLine(line);
         }
 
@@ -174,7 +174,7 @@ namespace LightTrails
             {
                 float distance = Vector3.Distance(line.transform.position, lastPos);
 
-                if (fadeSpeed != 0)
+                if (fadeSpeed == 0)
                 {
                     currentDistance += distance;
 
@@ -182,7 +182,6 @@ namespace LightTrails
                     {
                         currentDistance = currentDistance % pointDistance;
                         points.Add(line.transform.position);
-                        Main.Log("Length : " + line.positionCount);
 
                         if (points.Count == 1)
                             firstPointPos = points[0];
@@ -212,6 +211,7 @@ namespace LightTrails
                 if (points.Count == maxPointsCount)
                     points[0] = Vector3.Lerp(firstPointPos, points[1], currentDistance / pointDistance);
 
+                line.positionCount = points.Count;
                 line.SetPositions(points.ToArray());
                 lastPos = line.transform.position;
             }
