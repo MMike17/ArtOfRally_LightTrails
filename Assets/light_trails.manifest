@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2837788302
+CRC: 1550272523
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: ac383d01158f4559fa67344a8f643a8e
+    Hash: 340e91e03271f22ea352759b4c09070d
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 781f69eed4ab9a045bd82fe33d74bedc
+    Hash: 723b25e92ab6f7a3a4164255f6096cdb
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -15,11 +15,17 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 21
   Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
 - Class: 120
   Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/LightTrails/Line.mat
+- Assets/LightTrails/Horizontal.png
 - Assets/LightTrails/LightTrail.prefab
 Dependencies: []
