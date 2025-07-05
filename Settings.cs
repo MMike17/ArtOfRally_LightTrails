@@ -48,7 +48,8 @@ namespace LightTrails
         {
             Main.SetMarkers(showMarkers);
 
-            //
+            TrailsSpawner.leftTrail.RefreshSettings();
+            TrailsSpawner.rightTrail.RefreshSettings();
         }
     }
 }

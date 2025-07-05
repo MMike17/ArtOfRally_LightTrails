@@ -28,10 +28,13 @@ namespace LightTrails
     [HarmonyPatch(typeof(BrakeEffects), "Awake")]
     static class TrailsSpawner
     {
+        public static TrailAnimator leftTrail;
+        public static TrailAnimator rightTrail;
+
         static void Postfix(BrakeEffects __instance)
         {
-            __instance.LeftBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
-            __instance.RightBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
+            leftTrail = __instance.LeftBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
+            rightTrail = __instance.RightBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
         }
     }
 }

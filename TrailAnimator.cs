@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -62,6 +63,7 @@ namespace LightTrails
                     }
                 );
                 releasedLines.Add(currentLine);
+                currentLine = null;
             }
 
             // TODO : update released lines
@@ -138,16 +140,13 @@ namespace LightTrails
                 this.line = line;
 
                 lastPos = line.transform.position;
+                points = new List<Vector3>();
+                firstPointPos = lastPos;
 
-                Vector3[] extractedPoints = new Vector3[line.positionCount];
-                line.GetPositions(extractedPoints);
-                points = new List<Vector3>(extractedPoints);
+                points.Add(lastPos);
+                line.SetPositions(points.ToArray());
 
-                if (points.Count == 0)
-                {
-                    points.Add(lastPos);
-                    line.SetPositions(points.ToArray());
-                }
+                UpdateSettings();
             }
 
             public void UpdateSettings()
@@ -173,10 +172,9 @@ namespace LightTrails
 
             public void Update()
             {
-                bool isFading = fadeSpeed != 0;
                 float distance = Vector3.Distance(line.transform.position, lastPos);
 
-                if (isFading)
+                if (fadeSpeed != 0)
                 {
                     currentDistance += distance;
 
@@ -184,6 +182,7 @@ namespace LightTrails
                     {
                         currentDistance = currentDistance % pointDistance;
                         points.Add(line.transform.position);
+                        Main.Log("Length : " + line.positionCount);
 
                         if (points.Count == 1)
                             firstPointPos = points[0];
