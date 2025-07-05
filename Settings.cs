@@ -6,6 +6,7 @@ using static UnityModManagerNet.UnityModManager;
 // TODO : Add settings here
 // trail width
 // initial alpha ?
+// show on brake only / show all the time
 
 namespace LightTrails
 {
@@ -30,10 +31,10 @@ namespace LightTrails
         public bool showSnow;
 
         [Header("Trails")]
-        [Draw(DrawType.Slider, Min = 2, Max = 10)]
-        public int trailSmoothness = 6;
         [Draw(DrawType.Slider, Min = 1, Max = 5)]
-        public float trailMaxLength = 3;
+        public int trailSmoothness = 3;
+        [Draw(DrawType.Slider, Min = 1, Max = 10)]
+        public float trailMaxLength = 5;
 
         [Header("Debug")]
         [Draw(DrawType.Toggle)]
