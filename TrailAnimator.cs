@@ -122,8 +122,9 @@ namespace LightTrails
             LineRenderer line = Instantiate(Main.trailPrefab, transform).GetComponent<LineRenderer>();
             line.widthMultiplier = Main.settings.trailWidth;
 
-            if (!asBrakes)
-                line.material.color = Color.black;
+            Color lineColor = asBrakes ? Color.white : Color.black;
+            lineColor.a = Main.settings.trailAlpha;
+            line.material.color = lineColor;
 
             currentLine = new TrackedLine(line);
         }

@@ -3,9 +3,6 @@ using UnityModManagerNet;
 
 using static UnityModManagerNet.UnityModManager;
 
-// TODO : Add settings here
-// initial alpha ?
-
 namespace LightTrails
 {
     public class Settings : ModSettings, IDrawable
@@ -35,6 +32,8 @@ namespace LightTrails
         public float trailMaxLength = 10;
         [Draw(DrawType.Slider, Min = 0.1f, Max = 0.6f)]
         public float trailWidth = 0.3f;
+        [Draw(DrawType.Slider, Min = 0.1f, Max = 1)]
+        public float trailAlpha = 0.8f;
         [Draw(DrawType.Toggle)]
         public bool brakeTrailOnly = false;
 
@@ -51,8 +50,20 @@ namespace LightTrails
         {
             Main.SetMarkers(showMarkers);
 
+            trailMaxLength = SnapValue(trailMaxLength, 10, 20 - 2, 0.1f);
+            trailWidth = SnapValue(trailWidth, 0.3f, 0.6f - 0.1f, 0.1f);
+            trailAlpha = SnapValue(trailAlpha, 0.8f, 1 - 0.1f, 0.1f);
+
             TrailsSpawner.leftTrail.RefreshSettings();
             TrailsSpawner.rightTrail.RefreshSettings();
+        }
+
+        private float SnapValue(float value, float snapValue, float range, float snapPercent)
+        {
+            float snapDiff = range * snapPercent;
+            float minTarget = snapValue - snapDiff / 2;
+            float maxTarget = snapValue + snapDiff / 2;
+            return value <= maxTarget && value >= minTarget ? snapValue : value;
         }
     }
 }
