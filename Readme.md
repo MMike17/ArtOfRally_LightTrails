@@ -52,4 +52,5 @@ and drop it into the mod manager's mods page.
 ![](Screenshots/Night.png)
 ![](Screenshots/NightBrakes.png)
 ![](Screenshots/BrakesOnly.png)
+![](Screenshots/InitialD.gif)
 ![](Screenshots/Settings.png)
