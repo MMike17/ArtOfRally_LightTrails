@@ -12,7 +12,7 @@
 - [x] Change the name of the mod and dll in the Info.json file
   - [ ] Add mod homepage to Info.json
   - [x] Add mod repository to Info.json
-- [ ] Adjust the readme.md file
-  - [ ] Adjust the links in the readme.md file
-  - [ ] Fill in the description in the readme.md file
-  - [ ] Reference screenshots in the readme.md file
+- [x] Adjust the readme.md file
+  - [x] Adjust the links in the readme.md file
+  - [x] Fill in the description in the readme.md file
+  - [x] Reference screenshots in the readme.md file
