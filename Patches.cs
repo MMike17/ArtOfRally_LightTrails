@@ -22,9 +22,29 @@ namespace LightTrails
     }
 
     [HarmonyPatch(typeof(StageScreen), nameof(StageScreen.Restart))]
-    static class RestartStagePatch
+    static class RestartTrailReseter
     {
         static void Postfix()
+        {
+            TrailsSpawner.leftTrail?.ResetTrails();
+            TrailsSpawner.rightTrail?.ResetTrails();
+        }
+    }
+
+    [HarmonyPatch(typeof(OutOfBoundsManager))]
+    static class RecoverTrailReseter
+    {
+        [HarmonyPatch("ResetProperties")]
+        [HarmonyPostfix]
+        static void RecoverPostfix()
+        {
+            TrailsSpawner.leftTrail?.ResetTrails();
+            TrailsSpawner.rightTrail?.ResetTrails();
+        }
+
+        [HarmonyPatch(nameof(OutOfBoundsManager.SetResettingInProgress))]
+        [HarmonyPostfix]
+        static void OutOfBoundsPostfix()
         {
             TrailsSpawner.leftTrail?.ResetTrails();
             TrailsSpawner.rightTrail?.ResetTrails();
