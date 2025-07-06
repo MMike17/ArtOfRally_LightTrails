@@ -10,6 +10,12 @@ namespace LightTrails
 
         static void Postfix(BrakeEffects __instance)
         {
+            Main.OnToggle += value =>
+            {
+                leftTrail?.SetVisibility(value);
+                rightTrail?.SetVisibility(value);
+            };
+
             leftTrail = __instance.LeftBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
             rightTrail = __instance.RightBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
         }
@@ -20,8 +26,8 @@ namespace LightTrails
     {
         static void Postfix()
         {
-            TrailsSpawner.leftTrail.ResetTrails();
-            TrailsSpawner.rightTrail.ResetTrails();
+            TrailsSpawner.leftTrail?.ResetTrails();
+            TrailsSpawner.rightTrail?.ResetTrails();
         }
     }
 }

@@ -122,6 +122,7 @@ namespace LightTrails
             line.material.color = lineColor;
 
             currentLine = new TrackedLine(line);
+            currentLine.SetVisibility(Main.enabled);
         }
 
         private void ReleaseLine()
@@ -131,6 +132,12 @@ namespace LightTrails
             currentLine.ReleaseLine(() => releasedLines.Remove(line));
             releasedLines.Add(currentLine);
             currentLine = null;
+        }
+
+        public void SetVisibility(bool value)
+        {
+            currentLine.SetVisibility(value);
+            releasedLines.ForEach(line => line.SetVisibility(value));
         }
 
         public void RefreshSettings()
@@ -190,6 +197,8 @@ namespace LightTrails
                 else
                     fadeSpeed = Mathf.Max(0.1f, Vector3.Distance(points[points.Count - 1], points[points.Count - 2]) / Time.deltaTime);
             }
+
+            public void SetVisibility(bool value) => line.enabled = value;
 
             public void PlaceLast() => points[points.Count - 1] = line.transform.position;
 
