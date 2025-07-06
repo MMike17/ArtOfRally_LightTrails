@@ -9,19 +9,19 @@ namespace LightTrails
     {
         [Header("General")]
         [Draw(DrawType.Toggle)]
-        public bool showMorning;
+        public bool showMorning = false;
         [Draw(DrawType.Toggle)]
-        public bool showAfternoon;
+        public bool showAfternoon = false;
         [Draw(DrawType.Toggle)]
-        public bool showSunset;
+        public bool showSunset = false;
         [Draw(DrawType.Toggle)]
-        public bool showNight;
+        public bool showNight = true;
         [Draw(DrawType.Toggle)]
-        public bool showFog;
+        public bool showFog = false;
         [Draw(DrawType.Toggle)]
-        public bool showRain;
+        public bool showRain = true;
         [Draw(DrawType.Toggle)]
-        public bool showSnow;
+        public bool showSnow = true;
 
         [Header("Trails")]
         [Draw(DrawType.Slider, Min = 1, Max = 4)]
@@ -33,7 +33,7 @@ namespace LightTrails
         [Draw(DrawType.Slider, Min = 0.1f, Max = 1)]
         public float trailAlpha = 0.8f;
         [Draw(DrawType.Toggle)]
-        public bool brakeTrailOnly = false;
+        public bool brakeTrailOnly = true;
 
         [Header("Debug")]
         [Draw(DrawType.Toggle)]
