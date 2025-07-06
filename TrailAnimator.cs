@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightTrails
@@ -25,95 +24,38 @@ namespace LightTrails
                     currentWeather = data.GetCurrentStage().Weather;
             }
 
-            if (!Main.settings.brakeTrailOnly)
-                SpawnTrail(false);
+            SpawnTrail(false);
         }
 
         private void Update()
         {
-            Main.Try(() =>
+            Main.Try("Animator update", () =>
             {
                 bool brakeInput = GameEntryPoint.EventManager.playerManager.carcontroller.brakeKey;
 
-                if (brakeInput)
+                if (brakeInput != lastBrakeInput)
                 {
-                    if (lastBrakeInput)
-                    {
-                        currentLine.Update();
-                        currentLine.PlaceLast();
-                    }
-                    else
-                    {
-                        if (!Main.settings.brakeTrailOnly)
-                            ReleaseLine();
-
-                        SpawnTrail(true);
-                    }
-                }
-                else
-                {
-                    if (lastBrakeInput)
-                    {
-                        ReleaseLine();
-
-                        if (!Main.settings.brakeTrailOnly)
-                            SpawnTrail(false);
-                    }
-
-                    if (!Main.settings.brakeTrailOnly)
-                    {
-                        currentLine.Update();
-                        currentLine.PlaceLast();
-                    }
+                    ReleaseLine();
+                    SpawnTrail(brakeInput);
                 }
 
-                releasedLines.ForEach(line => line.Update());
+                currentLine.PlaceLast();
+                currentLine.Update();
+
+                List<TrackedLine> toRemove = new List<TrackedLine>();
+                releasedLines.ForEach(line =>
+                {
+                    if (line.Update())
+                        toRemove.Add(line);
+                });
+                toRemove.ForEach(line => releasedLines.Remove(line));
+
                 lastBrakeInput = brakeInput;
             });
         }
 
         private void SpawnTrail(bool asBrakes)
         {
-            bool shouldSpawn = false;
-
-            switch (currentWeather)
-            {
-                case ConditionTypes.Weather.None:
-                    shouldSpawn = true;
-                    break;
-
-                case ConditionTypes.Weather.Morning:
-                    shouldSpawn = Main.settings.showMorning;
-                    break;
-
-                case ConditionTypes.Weather.Afternoon:
-                    shouldSpawn = Main.settings.showAfternoon;
-                    break;
-
-                case ConditionTypes.Weather.Sunset:
-                    shouldSpawn = Main.settings.showSunset;
-                    break;
-
-                case ConditionTypes.Weather.Night:
-                    shouldSpawn = Main.settings.showNight;
-                    break;
-
-                case ConditionTypes.Weather.Fog:
-                    shouldSpawn = Main.settings.showFog;
-                    break;
-
-                case ConditionTypes.Weather.Rain:
-                    shouldSpawn = Main.settings.showRain;
-                    break;
-
-                case ConditionTypes.Weather.Snow:
-                    shouldSpawn = Main.settings.showSnow;
-                    break;
-            }
-
-            if (!shouldSpawn)
-                return;
-
             LineRenderer line = Instantiate(Main.trailPrefab, transform).GetComponent<LineRenderer>();
             line.widthMultiplier = Main.settings.trailWidth;
 
@@ -122,14 +64,52 @@ namespace LightTrails
             line.material.color = lineColor;
 
             currentLine = new TrackedLine(line);
-            currentLine.SetVisibility(Main.enabled);
+            bool shouldDisplay = false;
+
+            switch (currentWeather)
+            {
+                case ConditionTypes.Weather.None:
+                    shouldDisplay = true;
+                    break;
+
+                case ConditionTypes.Weather.Morning:
+                    shouldDisplay = Main.settings.showMorning;
+                    break;
+
+                case ConditionTypes.Weather.Afternoon:
+                    shouldDisplay = Main.settings.showAfternoon;
+                    break;
+
+                case ConditionTypes.Weather.Sunset:
+                    shouldDisplay = Main.settings.showSunset;
+                    break;
+
+                case ConditionTypes.Weather.Night:
+                    shouldDisplay = Main.settings.showNight;
+                    break;
+
+                case ConditionTypes.Weather.Fog:
+                    shouldDisplay = Main.settings.showFog;
+                    break;
+
+                case ConditionTypes.Weather.Rain:
+                    shouldDisplay = Main.settings.showRain;
+                    break;
+
+                case ConditionTypes.Weather.Snow:
+                    shouldDisplay = Main.settings.showSnow;
+                    break;
+            }
+
+            if (Main.settings.brakeTrailOnly)
+                shouldDisplay &= asBrakes;
+
+            currentLine.SetVisibility(Main.enabled && shouldDisplay);
         }
 
         private void ReleaseLine()
         {
-            TrackedLine line = currentLine;
-
-            currentLine.ReleaseLine(() => releasedLines.Remove(line));
+            currentLine.ReleaseLine();
             releasedLines.Add(currentLine);
             currentLine = null;
         }
@@ -160,7 +140,6 @@ namespace LightTrails
         {
             private List<Vector3> points;
             private LineRenderer line;
-            private Action OnDestroy;
             private Vector3 firstPointPos;
             private Vector3 lastPos;
             private float pointDistance;
@@ -188,10 +167,8 @@ namespace LightTrails
                 pointDistance = 1f / Main.settings.trailSmoothness;
             }
 
-            public void ReleaseLine(Action OnDestroy)
+            public void ReleaseLine()
             {
-                this.OnDestroy = OnDestroy;
-
                 if (points.Count < 2)
                     Destroy();
                 else
@@ -202,7 +179,7 @@ namespace LightTrails
 
             public void PlaceLast() => points[points.Count - 1] = line.transform.position;
 
-            public void Update()
+            public bool Update()
             {
                 float distance = Vector3.Distance(line.transform.position, lastPos);
 
@@ -212,7 +189,7 @@ namespace LightTrails
 
                     if (currentDistance >= pointDistance)
                     {
-                        currentDistance = currentDistance % pointDistance;
+                        currentDistance %= pointDistance;
                         points.Add(line.transform.position);
 
                         if (points.Count == 1)
@@ -233,7 +210,7 @@ namespace LightTrails
                 if (maxPointsCount == 1)
                 {
                     Destroy();
-                    return;
+                    return true;
                 }
 
                 if (points.Count > maxPointsCount)
@@ -248,13 +225,11 @@ namespace LightTrails
                 line.positionCount = points.Count;
                 line.SetPositions(points.ToArray());
                 lastPos = line.transform.position;
+
+                return false;
             }
 
-            public void Destroy()
-            {
-                GameObject.Destroy(line.gameObject);
-                OnDestroy?.Invoke();
-            }
+            public void Destroy() => GameObject.Destroy(line.gameObject);
         }
     }
 }

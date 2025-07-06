@@ -38,7 +38,7 @@ namespace LightTrails
             modEntry.OnGUI = settings.Draw;
             modEntry.OnSaveGUI = settings.Save;
 
-            Try(() =>
+            Try("Loading asset bundle", () =>
             {
                 AssetBundle bundle = AssetBundle.LoadFromFile(Path.Combine(modEntry.Path, "light_trails"));
 
@@ -72,7 +72,7 @@ namespace LightTrails
         public static void Error(string message) => Logger.Error(message);
 
         /// <summary>Use this to log possible execution errors to the console</summary>
-        public static void Try(Action callback)
+        public static void Try(string message, Action callback)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace LightTrails
             }
             catch (Exception e)
             {
-                Error(e.ToString());
+                Error(message + "\n" + e.ToString());
             }
         }
 
