@@ -37,4 +37,14 @@ namespace LightTrails
             rightTrail = __instance.RightBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
         }
     }
+
+    [HarmonyPatch(typeof(StageScreen), nameof(StageScreen.Restart))]
+    static class RestartStagePatch
+    {
+        static void Postfix()
+        {
+            TrailsSpawner.leftTrail.ResetTrails();
+            TrailsSpawner.rightTrail.ResetTrails();
+        }
+    }
 }

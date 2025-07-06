@@ -13,10 +13,7 @@ namespace LightTrails
         private TrackedLine currentLine;
         private bool lastBrakeInput;
 
-        // TODO : Add trail with settings
-        // TODO : Add trail alpha settings
         // TODO : Fix trails joining in full mode
-        // TODO : Fix trails on retry 
 
         private void Awake()
         {
@@ -144,6 +141,16 @@ namespace LightTrails
             releasedLines.ForEach(line => line.UpdateSettings());
         }
 
+        public void ResetTrails()
+        {
+            currentLine.Destroy();
+
+            releasedLines.ForEach(item => item.Destroy());
+            releasedLines.Clear();
+
+            Awake();
+        }
+
         public class TrackedLine
         {
             private List<Vector3> points;
@@ -181,10 +188,7 @@ namespace LightTrails
                 this.OnDestroy = OnDestroy;
 
                 if (points.Count < 2)
-                {
-                    Destroy(line.gameObject);
-                    OnDestroy();
-                }
+                    Destroy();
                 else
                     fadeSpeed = Mathf.Max(0.1f, Vector3.Distance(points[points.Count - 1], points[points.Count - 2]) / Time.deltaTime);
             }
@@ -221,8 +225,7 @@ namespace LightTrails
 
                 if (maxPointsCount == 1)
                 {
-                    Destroy(line.gameObject);
-                    OnDestroy();
+                    Destroy();
                     return;
                 }
 
@@ -238,6 +241,12 @@ namespace LightTrails
                 line.positionCount = points.Count;
                 line.SetPositions(points.ToArray());
                 lastPos = line.transform.position;
+            }
+
+            public void Destroy()
+            {
+                GameObject.Destroy(line.gameObject);
+                OnDestroy?.Invoke();
             }
         }
     }
