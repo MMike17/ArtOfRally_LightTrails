@@ -13,8 +13,6 @@ namespace LightTrails
         private TrackedLine currentLine;
         private bool lastBrakeInput;
 
-        // TODO : Fix trails joining in full mode
-
         private void Awake()
         {
             releasedLines = new List<TrackedLine>();
