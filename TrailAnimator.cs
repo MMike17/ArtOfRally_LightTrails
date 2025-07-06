@@ -13,6 +13,11 @@ namespace LightTrails
         private TrackedLine currentLine;
         private bool lastBrakeInput;
 
+        // TODO : Add trail with settings
+        // TODO : Add trail alpha settings
+        // TODO : Fix trails joining in full mode
+        // TODO : Fix trails on retry 
+
         private void Awake()
         {
             releasedLines = new List<TrackedLine>();
@@ -115,10 +120,12 @@ namespace LightTrails
                 return;
 
             LineRenderer line = Instantiate(Main.trailPrefab, transform).GetComponent<LineRenderer>();
-            currentLine = new TrackedLine(line);
+            line.widthMultiplier = Main.settings.trailWidth;
 
             if (!asBrakes)
                 line.material.color = Color.black;
+
+            currentLine = new TrackedLine(line);
         }
 
         private void ReleaseLine()

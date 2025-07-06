@@ -4,9 +4,7 @@ using UnityModManagerNet;
 using static UnityModManagerNet.UnityModManager;
 
 // TODO : Add settings here
-// trail width
 // initial alpha ?
-// show on brake only / show all the time
 
 namespace LightTrails
 {
@@ -35,6 +33,8 @@ namespace LightTrails
         public int trailSmoothness = 3;
         [Draw(DrawType.Slider, Min = 2, Max = 20)]
         public float trailMaxLength = 10;
+        [Draw(DrawType.Slider, Min = 0.1f, Max = 0.6f)]
+        public float trailWidth = 0.3f;
         [Draw(DrawType.Toggle)]
         public bool brakeTrailOnly = false;
 
