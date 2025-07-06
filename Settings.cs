@@ -7,8 +7,6 @@ namespace LightTrails
 {
     public class Settings : ModSettings, IDrawable
     {
-        // [Draw(DrawType.)]
-
         [Header("General")]
         [Draw(DrawType.Toggle)]
         public bool showMorning;
@@ -39,17 +37,12 @@ namespace LightTrails
 
         [Header("Debug")]
         [Draw(DrawType.Toggle)]
-        public bool showMarkers;
-        [Draw(DrawType.Toggle)]
-        //public bool disableInfoLogs = true;
-        public bool disableInfoLogs = false;
+        public bool disableInfoLogs = true;
 
         public override void Save(ModEntry modEntry) => Save(this, modEntry);
 
         public void OnChange()
         {
-            Main.SetMarkers(showMarkers);
-
             trailMaxLength = SnapValue(trailMaxLength, 10, 20 - 2, 0.1f);
             trailWidth = SnapValue(trailWidth, 0.3f, 0.6f - 0.1f, 0.1f);
             trailAlpha = SnapValue(trailAlpha, 0.8f, 1 - 0.1f, 0.1f);
