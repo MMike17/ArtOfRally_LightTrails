@@ -10,19 +10,17 @@ namespace LightTrails
 
         private List<TrackedLine> releasedLines;
         private TrackedLine currentLine;
+        private CarController controller;
         private bool lastBrakeInput;
 
         private void Awake()
         {
             releasedLines = new List<TrackedLine>();
+            controller = GameEntryPoint.EventManager.playerManager.carcontroller;
+            RallyData data = GameModeManager.GetRallyDataCurrentGameMode();
 
-            if (currentWeather == ConditionTypes.Weather.None)
-            {
-                RallyData data = GameModeManager.GetRallyDataCurrentGameMode();
-
-                if (data != null)
-                    currentWeather = data.GetCurrentStage().Weather;
-            }
+            if (data != null)
+                currentWeather = data.GetCurrentStage().Weather;
 
             SpawnTrail(false);
         }
@@ -31,7 +29,10 @@ namespace LightTrails
         {
             Main.Try("Animator update", () =>
             {
-                bool brakeInput = GameEntryPoint.EventManager.playerManager.carcontroller.brakeKey;
+                if (ReplayManager.Instance().CurrentState == ReplayManager.ReplayState.Playback)
+                    return;
+
+                bool brakeInput = controller.brakeKey;
 
                 if (brakeInput != lastBrakeInput)
                 {
@@ -104,7 +105,7 @@ namespace LightTrails
             if (Main.settings.brakeTrailOnly)
                 shouldDisplay &= asBrakes;
 
-            currentLine.SetVisibility(Main.enabled && shouldDisplay);
+            currentLine.SetVisibility(Main.enabled && shouldDisplay && ReplayManager.Instance().CurrentState != ReplayManager.ReplayState.Playback);
         }
 
         private void ReleaseLine()
