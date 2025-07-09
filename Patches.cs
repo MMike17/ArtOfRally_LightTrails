@@ -2,13 +2,13 @@ using HarmonyLib;
 
 namespace LightTrails
 {
-    [HarmonyPatch(typeof(BrakeEffects), "Awake")]
+    [HarmonyPatch(typeof(EventManager), nameof(EventManager.StartEvent))]
     static class TrailsSpawner
     {
         public static TrailAnimator leftTrail;
         public static TrailAnimator rightTrail;
 
-        static void Postfix(BrakeEffects __instance)
+        static void Postfix(EventManager __instance)
         {
             Main.OnToggle += value =>
             {
@@ -16,8 +16,10 @@ namespace LightTrails
                 rightTrail?.SetVisibility(value);
             };
 
-            leftTrail = __instance.LeftBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
-            rightTrail = __instance.RightBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
+            BrakeEffects brakelights = __instance.playerManager.carcontroller.GetComponentInChildren<BrakeEffects>();
+
+            leftTrail = brakelights.LeftBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
+            rightTrail = brakelights.RightBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
         }
     }
 
