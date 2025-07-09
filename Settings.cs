@@ -47,8 +47,8 @@ namespace LightTrails
             trailWidth = SnapValue(trailWidth, 0.3f, 0.6f - 0.1f, 0.1f);
             trailAlpha = SnapValue(trailAlpha, 0.8f, 1 - 0.1f, 0.1f);
 
-            TrailsSpawner.leftTrail.RefreshSettings();
-            TrailsSpawner.rightTrail.RefreshSettings();
+            TrailsSpawner.leftTrail?.RefreshSettings();
+            TrailsSpawner.rightTrail?.RefreshSettings();
         }
 
         private float SnapValue(float value, float snapValue, float range, float snapPercent)
