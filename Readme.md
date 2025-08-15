@@ -16,7 +16,7 @@ A mod for Art of Rally adding light trails for brake lights similar to the ones 
 ## Usage
 
 Press Ctrl + F10 to open the mod manager menu.\
-Adjust settings to select when and how the trails will be displayed.\
+Adjust settings to select when and how the trails will be displayed.
 
 By default, the mod displays brakelight trails on night, rain and snow weathers, only when you brake.
 
