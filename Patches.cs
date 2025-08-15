@@ -10,13 +10,17 @@ namespace LightTrails
 
         static void Postfix(EventManager __instance)
         {
+            BrakeEffects brakelights = __instance.playerManager.carcontroller.GetComponentInChildren<BrakeEffects>();
+
+            // skip if already have component
+            if (brakelights.LeftBrakeLightTransform.TryGetComponent(out TrailAnimator _))
+                return;
+
             Main.OnToggle += value =>
             {
                 leftTrail?.SetVisibility(value);
                 rightTrail?.SetVisibility(value);
             };
-
-            BrakeEffects brakelights = __instance.playerManager.carcontroller.GetComponentInChildren<BrakeEffects>();
 
             leftTrail = brakelights.LeftBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
             rightTrail = brakelights.RightBrakeLightTransform.gameObject.AddComponent<TrailAnimator>();
