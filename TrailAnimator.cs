@@ -6,6 +6,8 @@ namespace LightTrails
     /// <summary>Animates light trails depending on settings</summary>
     public class TrailAnimator : MonoBehaviour
     {
+        const float MIN_FADE_SPEED = 5;
+
         private static ConditionTypes.Weather currentWeather = ConditionTypes.Weather.None;
 
         private List<TrackedLine> releasedLines;
@@ -29,8 +31,11 @@ namespace LightTrails
         {
             Main.Try("Animator update", () =>
             {
-                if (ReplayManager.Instance().CurrentState == ReplayManager.ReplayState.Playback)
+                if (ReplayManager.Instance() == null || ReplayManager.Instance().CurrentState == ReplayManager.ReplayState.Playback)
                     return;
+
+                if (currentLine == null || controller == null || releasedLines == null)
+                    Awake();
 
                 bool brakeInput = controller.brakeKey;
 
@@ -42,6 +47,7 @@ namespace LightTrails
 
                 currentLine.PlaceLast();
                 currentLine.Update();
+                currentLine.CheckLineColor(brakeInput);
 
                 List<TrackedLine> toRemove = new List<TrackedLine>();
                 releasedLines.ForEach(line =>
@@ -60,11 +66,7 @@ namespace LightTrails
             LineRenderer line = Instantiate(Main.trailPrefab, transform).GetComponent<LineRenderer>();
             line.widthMultiplier = Main.settings.trailWidth;
 
-            Color lineColor = asBrakes ? Color.white : Color.black;
-            lineColor.a = Main.settings.trailAlpha;
-            line.material.color = lineColor;
-
-            currentLine = new TrackedLine(line);
+            currentLine = new TrackedLine(line, asBrakes);
             bool shouldDisplay = false;
 
             switch (currentWeather)
@@ -148,7 +150,7 @@ namespace LightTrails
             private float fadeSpeed;
             private int maxPointsCount;
 
-            public TrackedLine(LineRenderer line)
+            public TrackedLine(LineRenderer line, bool asBrakes)
             {
                 this.line = line;
 
@@ -160,6 +162,18 @@ namespace LightTrails
                 line.SetPositions(points.ToArray());
 
                 UpdateSettings();
+                SetColor(asBrakes);
+            }
+
+            // this is only for bug fixing
+            private void SetColor(bool asBrakes)
+            {
+                if (line == null)
+                    return;
+
+                Color lineColor = asBrakes ? Color.white : Color.black;
+                lineColor.a = Main.settings.trailAlpha;
+                line.material.color = lineColor;
             }
 
             public void UpdateSettings()
@@ -170,18 +184,32 @@ namespace LightTrails
 
             public void ReleaseLine()
             {
+                if (line == null)
+                    return;
+
                 if (points.Count < 2)
                     Destroy();
                 else
-                    fadeSpeed = Mathf.Max(0.1f, Vector3.Distance(points[points.Count - 1], points[points.Count - 2]) / Time.deltaTime);
+                    fadeSpeed = Mathf.Max(MIN_FADE_SPEED, Vector3.Distance(points[points.Count - 1], points[points.Count - 2]) / Time.deltaTime);
             }
 
-            public void SetVisibility(bool value) => line.enabled = value;
+            public void SetVisibility(bool value)
+            {
+                if (line != null)
+                    line.enabled = value;
+            }
 
-            public void PlaceLast() => points[points.Count - 1] = line.transform.position;
+            public void PlaceLast()
+            {
+                if (line != null)
+                    points[points.Count - 1] = line.transform.position;
+            }
 
             public bool Update()
             {
+                if (line == null)
+                    return true;
+
                 float distance = Vector3.Distance(line.transform.position, lastPos);
 
                 if (fadeSpeed == 0)
@@ -230,7 +258,25 @@ namespace LightTrails
                 return false;
             }
 
-            public void Destroy() => GameObject.Destroy(line.gameObject);
+            // this is only intended to be called on the current line
+            public void CheckLineColor(bool brakeInput)
+            {
+                if (line == null)
+                    return;
+
+                Color targetColor = brakeInput ? Color.white : Color.black;
+                Color currentColor = line.material.color;
+                currentColor.a = 1;
+
+                if (currentColor != targetColor)
+                    SetColor(brakeInput);
+            }
+
+            public void Destroy()
+            {
+                if (line != null)
+                    GameObject.Destroy(line.gameObject);
+            }
         }
     }
 }
